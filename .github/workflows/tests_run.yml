@@ -1,0 +1,38 @@
+name: Test running
+
+on:
+  push:
+    branches: [ "*" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: "3.8"
+
+    - name: Install dependencies
+      run: |
+        set -x
+
+        sudo apt-get update -y
+        sudo apt-get install python-dev libsdl-image1.2-dev \
+          libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsdl1.2-dev \
+          libsmpeg-dev python-numpy subversion libportmidi-dev \
+          ffmpeg libswscale-dev libavformat-dev libavcodec-dev
+
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        set -x
+
+        pytest -v tests.py
